@@ -26,7 +26,6 @@
 #include <iostream>
 #include <string>
 using namespace std;
-// Elaborado por Lia Mendoza
 
 struct TareaIA{
     string id_alfanumerico, tipo_algoritmo;
@@ -66,7 +65,7 @@ void mostrarLista(TareaIA *inicio){
         cout << "Lista esta vacia" << endl;
 }
 
-void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia ){
+void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia){
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
 
     if (listaVacia(inicio)){
@@ -87,9 +86,100 @@ void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float
     inicio = nuevo;
 }
 
-/*Quite insertar elemento, eliminar y buscar porque por ahora no las necesitamos y me molesta tenerlas ahi.
-Creo que luego si se van a necesitar pero luego las modifiamos primero hay que hacer la de ordenar de menor a mayor
-dependiendo de su consumo energetico*/
+main(){
+    TareaIA *lista = NULL;
+    string id_alfanumerico, tipo_algoritmo;
+    float peso_computacional, latencia_max, consumo_energetico;
+    int urgencia, x = -1;
+
+    while (x != 9){
+
+        system ("cls");
+        
+        cout << "------------ BIENVENIDO AL MENU DE LA MISION NEURO-LINK ------------"<< endl;
+        cout << "con el siguiente menu podra acceder a distintas secciones del menu" << endl;
+        cout << "porfavor presione correctamente los numeros indicados para comenzar" << endl;
+        cout << "                                                                               " << endl;
+        cout << " 1. Insertar al inicio de la lista" << endl;
+        cout << " 2. Insertar al final de la lista" << endl;
+        cout << " 3. Imprimir la lista" << endl;
+        cout << " 4. Ordenar la lista en funcion del consumo energetico" << endl;
+        cout << " 5. Eliminar nodos que supere un dato determinado de latencia" << endl;
+        cout << " 6. Procesar cuantas tareas antes de agotar la bateria" << endl;
+        cout << " 7. Mover tareas de menor urgencia a una lista de espera" << endl;
+        cout << " 8. Salir del menu" << endl;
+        cout << "______________________________________________________________________" << endl;
+        
+        cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
+
+        while (x < 0 || x > 8){
+            cout << "Numero fuera del rango, porfavor ingrese un numero perteneciente al menu";
+            cin >> x;
+        }
+
+        switch(x){
+            case 1:
+                cout << "1. Ingrese ID Alfanumerico unico: ";
+                cin >> id_alfanumerico;
+    
+                cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
+                cin >> tipo_algoritmo;
+    
+                cout << "3. Ingrese Peso Computacional (TFLOPS): ";
+                cin >> peso_computacional;
+    
+                cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
+                cin >> latencia_max;
+            
+                cout << "5. Ingrese Consumo Energetico (Watts): ";
+                cin >> consumo_energetico;
+    
+                cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
+                cin >> urgencia;
+
+                insertarPrimero(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
+                break;
+
+            case 2:
+                cout << "1. Ingrese ID Alfanumerico unico: ";
+                cin >> id_alfanumerico;
+    
+                cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
+                cin >> tipo_algoritmo;
+    
+                cout << "3. Ingrese Peso Computacional (TFLOPS): ";
+                cin >> peso_computacional;
+    
+                cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
+                cin >> latencia_max;
+            
+                cout << "5. Ingrese Consumo Energetico (Watts): ";
+                cin >> consumo_energetico;
+    
+                cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
+                cin >> urgencia;
+
+                insertarUltimo(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
+                break;
+            
+            case 3:
+                if (listaVacia(lista)){
+                    cout << "la lista esta vacia.";
+                }
+                else{
+                    cout << "La lista es: ";
+                    mostrarLista(lista);
+                }
+                break;
+    }
+        if (x != 8) {
+            cout << "Presione ENTER para continuar...";
+            cin.ignore(10000, '\n'); // Limpia la basura del teclado
+            cin.get();               // Pausa hasta que presiones Enter
+        }
+    }
+    return 0;
+}
 
 
 // 3. Requerimientos Funcionales  
