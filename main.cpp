@@ -24,134 +24,74 @@
 // • Urgencia: Escala entera del 1 al 10.  
 // • Puntero de Enlace: Dirección de memoria al siguiente nodo.  
 #include <iostream>
+#include <string>
 using namespace std;
-struct TareaIA 
-{
-    std::string idTarea;          
-    std::string tipoAlgoritmo;      
-    double pesoComputacional;     
-    double latenciaMaxima;        
-    double consumoEnergetico;    
-    int urgencia;                 
+// Elaborado por Lia Mendoza
+
+struct TareaIA{
+    string id_alfanumerico, tipo_algoritmo;
+    float peso_computacional, latencia_max, consumo_energetico;
+    int urgencia;
     TareaIA *prox;
 };
-TareaIA *crearTreaIA(std::string idtarea,std::string tipoAlgoritmo,double pesoComputacional,double latenciaMaxima,double consumoEnergetico,int urgencia)
-{
+
+TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float energia, int urgencia ){
     TareaIA *nuevo = new TareaIA;
-    nuevo->idTarea = idtarea;
-    nuevo->tipoAlgoritmo = tipoAlgoritmo;
-    nuevo->pesoComputacional = pesoComputacional;
-    nuevo->latenciaMaxima = latenciaMaxima;
-    nuevo->consumoEnergetico = consumoEnergetico;
+    nuevo->id_alfanumerico = id;
+    nuevo->tipo_algoritmo = tipo;
+    nuevo->peso_computacional = peso;
+    nuevo->latencia_max = latencia;
+    nuevo->consumo_energetico = energia;
     nuevo->urgencia = urgencia;
-    nuevo->prox=nullptr;
+    nuevo->prox = NULL;
     return nuevo;
 }
 
-bool TareaVacia(TareaIA *Tarea)
-{
-    return Tarea == NULL;
+bool listaVacia(TareaIA *inicio){
+    return inicio == NULL;
 }
 
-void mostrarTarea(TareaIA *Tarea)
-{
-   TareaIA *mover;
+void mostrarLista(TareaIA *inicio){
+    TareaIA *mover;
 
-    if (!TareaVacia(Tarea))
-    {
-        mover = Tarea;
-        while (mover != NULL)
-        {
-            cout << mover->idTarea << "->";
-            cout << mover->tipoAlgoritmo << "->";
-            cout << mover->pesoComputacional << "->";
-            cout << mover->latenciaMaxima << "->";
-            cout << mover->consumoEnergetico << "->";
-            cout << mover->urgencia << "->";
+    if (!listaVacia(inicio)){
+        mover = inicio;
+        while (mover != NULL){
+            cout << "|" << mover->id_alfanumerico << ", " << mover->tipo_algoritmo << ", " << mover->peso_computacional << ", " << mover->latencia_max << ", " << mover->consumo_energetico << ", " << mover->urgencia << "| ->";
             mover = mover->prox;
         }
         cout << "NULL" << endl;
     }
     else
-    cout << "Tarea vacia" << endl;
+        cout << "Lista esta vacia" << endl;
 }
 
-void insertarTarea(TareaIA *&Tarea, std::string idtarea,std::string tipoAlgoritmo,double pesoComputacional,double latenciaMaxima,double consumoEnergetico,int urgencia) )
-{
-   TareaIA *nuevo = crearTreaIA(idtarea, tipoAlgoritmo, pesoComputacional, latenciaMaxima, consumoEnergetico, urgencia);
+void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia ){
+    TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
 
-    if (TareaVacia(Tarea))
-    {
-        Tarea = nuevo;
+    if (listaVacia(inicio)){
+      inicio = nuevo;
     }
-    else
-    {
-      TareaIA *auxiliar = inicio;
-    while (auxiliar->prox != NULL)
-    {
-        auxiliar = auxiliar->prox;
-    }
-    auxiliar->prox = nuevo;
-}
-}
-
-void eliminar(Nodo *&inicio, int valor)
-{
-    Nodo *mover, *anterior = NULL;
-
-    if (listaVacia(inicio))
-    cout << "Lista esta vacia" << endl;
-    else
-    {
-        mover = inicio;
-        while (mover != NULL && mover->dato != valor)
-        {
-            anterior = mover;
-            mover = mover->prox;
+    else{
+        TareaIA *auxiliar = inicio;
+        while (auxiliar->prox != NULL){
+            auxiliar = auxiliar->prox;
         }
-        if (mover == NULL)
-            cout << "El elemento no existe en la lista " << endl;
-        else
-        {
-            if (mover == inicio)
-                inicio = inicio->prox;
-            else
-                anterior->prox = mover->prox;
-            delete mover;
-        }
+        auxiliar->prox = nuevo;
     }
 }
 
-void insertarPrimero(Nodo *&inicio, int valor)
-{
-    Nodo *nuevo = crearNodo(valor);
+void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia){
+    TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
     nuevo->prox = inicio;
     inicio = nuevo;
 }
 
-void buscarElemento(Nodo *inicio, int valor)
-{
-    Nodo *aux = inicio;
-    bool encontrado = false;
-    if (listaVacia(inicio))
-        cout << "Lista vacia" << endl;
-    else
-    {
-        while (aux != NULL && encontrado == false)
-        {
-            if (aux->dato == valor)
-            {
-                cout << "El dato " << valor << " fue encontrado con exito" << endl;
-                encontrado = true;
-            }
-            else
-                aux = aux->prox;
-        }
-        if (encontrado == false)
-        cout << "Valor no encontrado en la lista " << endl;
-    }
-}
-TareaIA *crearTereaia(TareaIA *
+/*Quite insertar elemento, eliminar y buscar porque por ahora no las necesitamos y me molesta tenerlas ahi.
+Creo que luego si se van a necesitar pero luego las modifiamos primero hay que hacer la de ordenar de menor a mayor
+dependiendo de su consumo energetico*/
+
+
 // 3. Requerimientos Funcionales  
 // A. Algoritmo de "Green Coding"  
 // El satélite debe operar bajo una política de ahorro de energía. Deben 
