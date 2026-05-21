@@ -25,6 +25,8 @@
 // • Puntero de Enlace: Dirección de memoria al siguiente nodo.  
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <thread>
 using namespace std;
 
 struct TareaIA{
@@ -56,7 +58,7 @@ void mostrarLista(TareaIA *inicio){
     if (!listaVacia(inicio)){
         mover = inicio;
         while (mover != NULL){
-            cout << "|" << mover->id_alfanumerico << ", " << mover->tipo_algoritmo << ", " << mover->peso_computacional << ", " << mover->latencia_max << ", " << mover->consumo_energetico << ", " << mover->urgencia << "| ->";
+            cout << " |" << mover->id_alfanumerico << ", " << mover->tipo_algoritmo << ", " << mover->peso_computacional << ", " << mover->latencia_max << ", " << mover->consumo_energetico << ", " << mover->urgencia << "|->";
             mover = mover->prox;
         }
         cout << "NULL" << endl;
@@ -84,6 +86,49 @@ void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
     nuevo->prox = inicio;
     inicio = nuevo;
+}
+
+void menorMayor (TareaIA *&inicio){
+    TareaIA *ordenada = NULL;
+    TareaIA *actual = inicio;
+
+    if (inicio == NULL){ // 1. Si la lista está vacía o tiene un solo elemento, ya está ordenada
+        cout << "No hay suficientes tareas en orbita para ordenar." << endl;
+        return;
+    }
+
+    while (actual != NULL){
+        // GUARDAMOS el siguiente nodo de la lista original antes de desconectar el 'actual'
+        // Si no hacemos esto, perdemos el resto de la lista (Segmentation Fault)
+        TareaIA *siguiente = actual->prox;
+
+        if (ordenada == NULL || actual->consumo_energetico <= ordenada->consumo_energetico) {
+            actual->prox = ordenada;
+            ordenada = actual;
+        }
+
+        else {
+            TareaIA *aux = ordenada;
+            
+            // Avanzamos en la lista ordenada mientras el siguiente nodo exista y su consumo sea menor al del nodo que queremos insertar
+            while (aux->prox != NULL && aux->prox->consumo_energetico < actual->consumo_energetico) {
+                aux = aux->prox;
+            }
+            
+            // Conectamos el nodo 'actual' en el hueco encontrado (entre 'aux' y 'aux->prox')
+            actual->prox = aux->prox;
+            aux->prox = actual;
+        }
+
+        // Pasamos a evaluar el siguiente nodo de la lista original
+        actual = siguiente;
+    }
+
+    // 5. Por último, actualizamos el puntero 'inicio' global para que apunte a la lista ya ordenada
+    inicio = ordenada;
+    
+    cout << "REALIZADO! las tareas ordenadas ahora son las siguientes: " << endl;
+    mostrarLista(inicio);
 }
 
 main(){
@@ -171,6 +216,21 @@ main(){
                     mostrarLista(lista);
                 }
                 break;
+            
+            case 4:
+                int segundos_espera = 4;
+
+                cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
+
+                for (int i = segundos_espera; i > 0; --i) {
+                    cout << i << " segundos restantes..." << endl;
+                    this_thread::sleep_for(chrono::seconds(1));
+                }   
+                menorMayor(lista);
+                break;
+
+            
+            
     }
         if (x != 8) {
             cout << "Presione ENTER para continuar...";
