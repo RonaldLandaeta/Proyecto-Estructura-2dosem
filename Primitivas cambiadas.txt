@@ -1,0 +1,67 @@
+#include <iostream>
+#include <string>
+using namespace std;
+// Elaborado por Lia Mendoza
+
+struct TareaIA{
+    string id_alfanumerico, tipo_algoritmo;
+    float peso_computacional, latencia_max, consumo_energetico;
+    int urgencia;
+    TareaIA *prox;
+};
+
+TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float energia, int urgencia ){
+    TareaIA *nuevo = new TareaIA;
+    nuevo->id_alfanumerico = id;
+    nuevo->tipo_algoritmo = tipo;
+    nuevo->peso_computacional = peso;
+    nuevo->latencia_max = latencia;
+    nuevo->consumo_energetico = energia;
+    nuevo->urgencia = urgencia;
+    nuevo->prox = NULL;
+    return nuevo;
+}
+
+bool listaVacia(TareaIA *inicio){
+    return inicio == NULL;
+}
+
+void mostrarLista(TareaIA *inicio){
+    TareaIA *mover;
+
+    if (!listaVacia(inicio)){
+        mover = inicio;
+        while (mover != NULL){
+            cout << "|" << mover->id_alfanumerico << ", " << mover->tipo_algoritmo << ", " << mover->peso_computacional << ", " << mover->latencia_max << ", " << mover->consumo_energetico << ", " << mover->urgencia << "| ->";
+            mover = mover->prox;
+        }
+        cout << "NULL" << endl;
+    }
+    else
+        cout << "Lista esta vacia" << endl;
+}
+
+void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia ){
+    TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
+
+    if (listaVacia(inicio)){
+      inicio = nuevo;
+    }
+    else{
+        TareaIA *auxiliar = inicio;
+        while (auxiliar->prox != NULL){
+            auxiliar = auxiliar->prox;
+        }
+        auxiliar->prox = nuevo;
+    }
+}
+
+void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia){
+    TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
+    nuevo->prox = inicio;
+    inicio = nuevo;
+}
+
+/*Quite insertar elemento, eliminar y buscar porque por ahora no las necesitamos y me molesta tenerlas ahi.
+Creo que luego si se van a necesitar pero luego las modifiamos primero hay que hacer la de ordenar de menor a mayor
+dependiendo de su consumo energetico*/

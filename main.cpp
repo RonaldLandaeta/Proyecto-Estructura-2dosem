@@ -71,7 +71,7 @@ void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float 
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
 
     if (listaVacia(inicio)){
-      inicio = nuevo;
+    inicio = nuevo;
     }
     else{
         TareaIA *auxiliar = inicio;
@@ -91,42 +91,33 @@ void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float
 void menorMayor (TareaIA *&inicio){
     TareaIA *ordenada = NULL;
     TareaIA *actual = inicio;
-
     if (inicio == NULL){ // 1. Si la lista está vacía o tiene un solo elemento, ya está ordenada
         cout << "No hay suficientes tareas en orbita para ordenar." << endl;
         return;
     }
-
     while (actual != NULL){
         // GUARDAMOS el siguiente nodo de la lista original antes de desconectar el 'actual'
         // Si no hacemos esto, perdemos el resto de la lista (Segmentation Fault)
         TareaIA *siguiente = actual->prox;
-
         if (ordenada == NULL || actual->consumo_energetico <= ordenada->consumo_energetico) {
             actual->prox = ordenada;
             ordenada = actual;
         }
-
         else {
             TareaIA *aux = ordenada;
-            
             // Avanzamos en la lista ordenada mientras el siguiente nodo exista y su consumo sea menor al del nodo que queremos insertar
             while (aux->prox != NULL && aux->prox->consumo_energetico < actual->consumo_energetico) {
                 aux = aux->prox;
             }
-            
             // Conectamos el nodo 'actual' en el hueco encontrado (entre 'aux' y 'aux->prox')
             actual->prox = aux->prox;
             aux->prox = actual;
         }
-
         // Pasamos a evaluar el siguiente nodo de la lista original
         actual = siguiente;
     }
-
     // 5. Por último, actualizamos el puntero 'inicio' global para que apunte a la lista ya ordenada
     inicio = ordenada;
-    
     cout << "REALIZADO! las tareas ordenadas ahora son las siguientes: " << endl;
     mostrarLista(inicio);
 }
@@ -138,7 +129,6 @@ main(){
     int urgencia, x = -1;
 
     while (x != 9){
-
         system ("cls");
         
         cout << "------------ BIENVENIDO AL MENU DE LA MISION NEURO-LINK ------------"<< endl;
@@ -154,57 +144,42 @@ main(){
         cout << " 7. Mover tareas de menor urgencia a una lista de espera" << endl;
         cout << " 8. Salir del menu" << endl;
         cout << "______________________________________________________________________" << endl;
-        
-        cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
 
+        cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
         while (x < 0 || x > 8){
             cout << "Numero fuera del rango, porfavor ingrese un numero perteneciente al menu";
             cin >> x;
         }
-
         switch(x){
             case 1:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-    
                 cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
                 cin >> tipo_algoritmo;
-    
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
-    
                 cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
                 cin >> latencia_max;
-            
                 cout << "5. Ingrese Consumo Energetico (Watts): ";
                 cin >> consumo_energetico;
-    
                 cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
                 cin >> urgencia;
-
                 insertarPrimero(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
                 break;
-
             case 2:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-    
                 cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
                 cin >> tipo_algoritmo;
-    
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
-    
                 cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
                 cin >> latencia_max;
-            
                 cout << "5. Ingrese Consumo Energetico (Watts): ";
                 cin >> consumo_energetico;
-    
                 cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
                 cin >> urgencia;
-
-                insertarUltimo(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
+                insertarUltimo(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max,consumo_energetico, urgencia);
                 break;
             
             case 3:
@@ -219,9 +194,7 @@ main(){
             
             case 4:
                 int segundos_espera = 4;
-
                 cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
-
                 for (int i = segundos_espera; i > 0; --i) {
                     cout << i << " segundos restantes..." << endl;
                     this_thread::sleep_for(chrono::seconds(1));
