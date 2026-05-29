@@ -106,6 +106,35 @@ void menorMayor (TareaIA *&inicio){
     mostrarLista(inicio);
 }
 
+void descarte(TareaIA *&inicio){
+    TareaIA *actual = inicio; float tiempo; TareaIA *anterior = NULL;
+    cout << "Indique el tiempo de espera maximo, se eliminaran los tiempos cuya latencia supere el tiempo de espera: "; cin >> tiempo;
+
+    while (actual != NULL){
+        if (tiempo > actual->latencia_max){
+            TareaIA *borrar = actual;
+
+            // CASO 1: El nodo a borrar es el PRIMERO de la lista
+            if (anterior == NULL){
+                inicio = actual->prox;      // Movemos el cabezal oficial al siguiente nodo
+                actual = inicio;            // Reposicionamos nuestro puntero de búsqueda
+            }
+            else{
+                anterior->prox = actual->prox;      // Enganchamos el nodo anterior con el siguiente (puente)
+                actual = actual->prox;              // Reposicionamos nuestro puntero de búsqueda
+            }
+            delete borrar;
+        }
+        else{
+            anterior = actual;
+            actual = actual->prox;
+        }
+    }
+    cout << "Eliminacion de tareas completado." << endl;
+    cout << "La lista actualizada queda como: " << endl;
+    mostrarLista(inicio);
+}
+
 void paseOrbita(TareaIA *inicio){
     TareaIA *aux = inicio; int energia_disponible; int contador = 0;
     cout << "Ingrese porfavor la energia disponible para la mision: "; cin >> energia_disponible;
@@ -120,7 +149,14 @@ void paseOrbita(TareaIA *inicio){
         }
     }
     cout << "El total de tareas procesables son: " << contador << endl;
-    cout << "Quedan " << energia_disponible << "W en la nave, por lo que" << aux->prox->id_alfanumerico << " que necesita " << aux->prox->consumo_energetico << "W no se pudo completar.";
+    if (aux != NULL){
+        cout << "Quedan " << energia_disponible << "W en la nave, por lo que" << aux->prox->id_alfanumerico << " que necesita " << aux->prox->consumo_energetico << "W no se pudo completar.";
+    }
+    else{
+        cout << "Se completaron todas las tareas sin problemas.";
+    }
+
+    
 }
 
 void balanceodeCarga (TareaIA *&inicio){
@@ -284,6 +320,18 @@ main(){
                 break;
             }
             
+            case 6:{
+                int segundos_espera = 4;
+
+                cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
+
+                for (int i = segundos_espera; i > 0; --i) {
+                    cout << i << " segundos restantes..." << endl;
+                    this_thread::sleep_for(chrono::seconds(1));
+                }
+                descarte(lista);
+                break;
+            } 
             
             case 7:
                 paseOrbita(lista);
@@ -318,4 +366,3 @@ main(){
     }
     return 0;
 }
-
