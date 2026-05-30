@@ -109,11 +109,9 @@ void menorMayor (TareaIA *&inicio){
 void descarte(TareaIA *&inicio){
     TareaIA *actual = inicio; float tiempo; TareaIA *anterior = NULL;
     cout << "Indique el tiempo de espera maximo, se eliminaran los tiempos cuya latencia supere el tiempo de espera: "; cin >> tiempo;
-
     while (actual != NULL){
         if (tiempo > actual->latencia_max){
             TareaIA *borrar = actual;
-
             // CASO 1: El nodo a borrar es el PRIMERO de la lista
             if (anterior == NULL){
                 inicio = actual->prox;      // Movemos el cabezal oficial al siguiente nodo
@@ -162,7 +160,6 @@ void paseOrbita(TareaIA *inicio){
 void balanceodeCarga (TareaIA *&inicio){
     TareaIA *actual = inicio; float umbral; float total = 0; TareaIA *ordenada = NULL; TareaIA *listaSecundaria = NULL;
     cout << "Ingrese el maximo peso computacional que podra realizar el satelite: "; cin >> umbral;
-
     while (actual != NULL){
         total = actual->peso_computacional + total;
         actual = actual->prox;
@@ -174,7 +171,6 @@ void balanceodeCarga (TareaIA *&inicio){
             actual->prox = ordenada;
             ordenada = actual;
         }                           
-
         else {
             TareaIA *aux = ordenada;
             while (aux->prox != NULL && aux->prox->urgencia < actual->urgencia){
@@ -204,7 +200,6 @@ void balanceodeCarga (TareaIA *&inicio){
     mostrarLista(listaSecundaria);
 }
 
-
 main(){
     TareaIA *lista = NULL; TareaIA *listaorg = NULL;
     string id_alfanumerico, tipo_algoritmo;
@@ -231,62 +226,46 @@ main(){
         cout << "______________________________________________________________________" << endl;
         
         cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
-
         while (x < 0 || x > 9){
             cout << "Numero fuera del rango, porfavor ingrese un numero perteneciente al menu";
             cin >> x;
         }
-
         switch(x){
             case 1:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-    
                 cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
                 cin >> tipo_algoritmo;
-    
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
-    
                 cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
                 cin >> latencia_max;
             
                 cout << "5. Ingrese Consumo Energetico (Watts): ";
                 cin >> consumo_energetico;
-    
                 cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
                 cin >> urgencia;
-
                 insertarPrimero(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
                 insertarPrimero(listaorg, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
-
                 cout << "La lista actual es: ";
                 mostrarLista(lista);
                 break;
-
             case 2:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-    
                 cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
                 cin >> tipo_algoritmo;
-    
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
-    
                 cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
                 cin >> latencia_max;
-            
                 cout << "5. Ingrese Consumo Energetico (Watts): ";
                 cin >> consumo_energetico;
-    
                 cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
                 cin >> urgencia;
-
                 insertarUltimo(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
                 insertarUltimo(listaorg, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
                 break;
-            
             case 3:
                 if (listaVacia(lista)){
                     cout << "la lista esta vacia.";
@@ -296,7 +275,6 @@ main(){
                     mostrarLista(lista);
                 }
                 break;
-
             case 4:
                 if (listaVacia(lista)){
                     cout << "la lista esta vacia.";
@@ -306,12 +284,9 @@ main(){
                     mostrarLista(listaorg);
                 }
                 break;
-            
             case 5:{
                 int segundos_espera = 4; // Tiempo del temporizador en segundos
-
                 cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
-
                 for (int i = segundos_espera; i > 0; --i) {
                     cout << i << " segundos restantes..." << endl;
                     this_thread::sleep_for(chrono::seconds(1));
@@ -319,12 +294,9 @@ main(){
                 menorMayor(lista);
                 break;
             }
-            
             case 6:{
                 int segundos_espera = 4;
-
                 cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
-
                 for (int i = segundos_espera; i > 0; --i) {
                     cout << i << " segundos restantes..." << endl;
                     this_thread::sleep_for(chrono::seconds(1));
@@ -332,16 +304,12 @@ main(){
                 descarte(lista);
                 break;
             } 
-            
             case 7:
                 paseOrbita(lista);
                 break;
-
             case 8:{
                 int segundos_espera = 4; // Tiempo del temporizador en segundos
-
                 cout << "Iniciando el ordenamiento, espere " << segundos_espera << " segundos..." << endl;
-
                 for (int i = segundos_espera; i > 0; --i) {
                     cout << i << " segundos restantes..." << endl;
                     this_thread::sleep_for(chrono::seconds(1));
@@ -349,14 +317,9 @@ main(){
                 balanceodeCarga(lista);
                 break;
             }
-
             case 9:
                 cout << "Muchas gracias por usar el menu";
                 break;
-                
-
-            
-            
     }
         if (x != 9) {
             cout << "Presione ENTER para continuar...";
