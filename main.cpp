@@ -2,6 +2,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <windows.h>
 using namespace std;
 
 struct TareaIA{
@@ -282,7 +283,7 @@ main(){
                 cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
                 for (int i = segundos_espera; i > 0; --i) {
                     cout << i << " segundos restantes..." << endl;
-                    this_thread::sleep_for(chrono::seconds(1));
+                    Sleep(1000);
                 }   
                 menorMayor(lista);
                 break;
@@ -292,7 +293,7 @@ main(){
                 cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
                 for (int i = segundos_espera; i > 0; --i) {
                     cout << i << " segundos restantes..." << endl;
-                    this_thread::sleep_for(chrono::seconds(1));
+                    Sleep(1000);
                 }
                 descarte(lista);
                 break;
@@ -305,7 +306,7 @@ main(){
                 cout << "Iniciando el ordenamiento, espere " << segundos_espera << " segundos..." << endl;
                 for (int i = segundos_espera; i > 0; --i) {
                     cout << i << " segundos restantes..." << endl;
-                    this_thread::sleep_for(chrono::seconds(1));
+                    Sleep(1000);
                 }   
                 balanceodeCarga(lista);
                 break;
