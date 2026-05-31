@@ -45,7 +45,7 @@ void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float 
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
 
     if (listaVacia(inicio)){
-      inicio = nuevo;
+    inicio = nuevo;
     }
     else{
         TareaIA *auxiliar = inicio;
@@ -62,6 +62,3 @@ void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float
     inicio = nuevo;
 }
 
-/*Quite insertar elemento, eliminar y buscar porque por ahora no las necesitamos y me molesta tenerlas ahi.
-Creo que luego si se van a necesitar pero luego las modifiamos primero hay que hacer la de ordenar de menor a mayor
-dependiendo de su consumo energetico*/
