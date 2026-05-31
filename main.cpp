@@ -66,22 +66,18 @@ void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float
 void menorMayor (TareaIA *&inicio){
     TareaIA *ordenada = NULL;
     TareaIA *actual = inicio;
-
     if (inicio == NULL){ // 1. Si la lista está vacía o tiene un solo elemento, ya está ordenada
         cout << "No hay suficientes tareas en orbita para ordenar." << endl;
         return;
     }
-
     while (actual != NULL){
         // GUARDAMOS el siguiente nodo de la lista original antes de desconectar el 'actual'
         // Si no hacemos esto, perdemos el resto de la lista (Segmentation Fault)
         TareaIA *siguiente = actual->prox;
-
         if (ordenada == NULL || actual->consumo_energetico <= ordenada->consumo_energetico) {
             actual->prox = ordenada; // Esta parte lo que esta haciendo es practicamente un "agregarPrimero", ya que lo 
             ordenada = actual;      // esta haciendo es "si la lista Ordenada esta vacia, o el dato de actual es menor que el primero de ordenada"
         }                           // la inserte
-
         else {
             TareaIA *aux = ordenada;
             
@@ -94,11 +90,9 @@ void menorMayor (TareaIA *&inicio){
             actual->prox = aux->prox;
             aux->prox = actual;
         }
-
         // Pasamos a evaluar el siguiente nodo de la lista original
         actual = siguiente;
     }
-
     // 5. Por último, actualizamos el puntero 'inicio' global para que apunte a la lista ya ordenada
     inicio = ordenada;
     
@@ -207,7 +201,6 @@ main(){
     int urgencia, x = -1;
 
     while (x != 9){
-
         system ("cls");
         
         cout << "------------ BIENVENIDO AL MENU DE LA MISION NEURO-LINK ------------"<< endl;
