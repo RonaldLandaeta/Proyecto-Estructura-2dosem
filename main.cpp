@@ -9,7 +9,6 @@ struct TareaIA{
     int urgencia;
     TareaIA *prox;
 };
-
 TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float energia, int urgencia ){
     TareaIA *nuevo = new TareaIA;
     nuevo->id_alfanumerico = id;
@@ -21,14 +20,11 @@ TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float ene
     nuevo->prox = NULL;
     return nuevo;
 }
-
 bool listaVacia(TareaIA *inicio){
     return inicio == NULL;
 }
-
 void mostrarLista(TareaIA *inicio){
     TareaIA *mover;
-
     if (!listaVacia(inicio)){
         mover = inicio;
         while (mover != NULL){
@@ -40,12 +36,11 @@ void mostrarLista(TareaIA *inicio){
     else
         cout << "Lista esta vacia" << endl;
 }
-
 void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia){
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
 
     if (listaVacia(inicio)){
-      inicio = nuevo;
+    inicio = nuevo;
     }
     else{
         TareaIA *auxiliar = inicio;
@@ -55,13 +50,11 @@ void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float 
         auxiliar->prox = nuevo;
     }
 }
-
 void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia){
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
     nuevo->prox = inicio;
     inicio = nuevo;
 }
-
 void menorMayor (TareaIA *&inicio){
     TareaIA *ordenada = NULL;
     TareaIA *actual = inicio;
@@ -94,11 +87,15 @@ void menorMayor (TareaIA *&inicio){
     }
     // 5. Por último, actualizamos el puntero 'inicio' global para que apunte a la lista ya ordenada
     inicio = ordenada;
-    
+    int segundos_espera = 4; // Tiempo del temporizador en segundos
+    cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
+        for (int i = segundos_espera; i > 0; --i) {
+            cout << i << " segundos restantes..." << endl;
+            Sleep(1000);
+        }   
     cout << "REALIZADO! las tareas ordenadas ahora son las siguientes: " << endl;
     mostrarLista(inicio);
 }
-
 void descarte(TareaIA *&inicio){
     TareaIA *actual = inicio; float tiempo; TareaIA *anterior = NULL;
     cout << "Indique el tiempo de espera maximo, se eliminaran los tiempos cuya latencia supere el tiempo de espera: "; cin >> tiempo;
@@ -121,11 +118,16 @@ void descarte(TareaIA *&inicio){
             actual = actual->prox;
         }
     }
+    int segundos_espera = 4;
+    cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
+        for (int i = segundos_espera; i > 0; --i) {
+            cout << i << " segundos restantes..." << endl;
+            Sleep(1000);
+        }
     cout << "Eliminacion de tareas completado." << endl;
     cout << "La lista actualizada queda como: " << endl;
     mostrarLista(inicio);
 }
-
 void paseOrbita(TareaIA *inicio){
     TareaIA *aux = inicio; int energia_disponible; int contador = 0;
     cout << "Ingrese porfavor la energia disponible para la mision: "; cin >> energia_disponible;
@@ -139,6 +141,12 @@ void paseOrbita(TareaIA *inicio){
             break;
         }
     }
+    int segundos_espera = 4;
+    cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
+    for (int i = segundos_espera; i > 0; --i) {
+        cout << i << " segundos restantes..." << endl;
+        Sleep(1000);
+    }
     cout << "El total de tareas procesables son: " << contador << endl;
     if (aux != NULL){
         cout << "Quedan " << energia_disponible << "W en la nave, por lo que" << aux->prox->id_alfanumerico << " que necesita " << aux->prox->consumo_energetico << "W no se pudo completar.";
@@ -146,10 +154,8 @@ void paseOrbita(TareaIA *inicio){
     else{
         cout << "Se completaron todas las tareas sin problemas.";
     }
-
     
 }
-
 void balanceodeCarga (TareaIA *&inicio){
     TareaIA *actual = inicio; float umbral; float total = 0; TareaIA *ordenada = NULL; TareaIA *listaSecundaria = NULL;
     cout << "Ingrese el maximo peso computacional que podra realizar el satelite: "; cin >> umbral;
@@ -187,6 +193,12 @@ void balanceodeCarga (TareaIA *&inicio){
         }
     }
     inicio = ordenada;
+    int segundos_espera = 4; // Tiempo del temporizador en segundos
+        cout << "Iniciando el ordenamiento, espere " << segundos_espera << " segundos..." << endl;
+            for (int i = segundos_espera; i > 0; --i) {
+            cout << i << " segundos restantes..." << endl;
+            Sleep(1000);
+            }   
     cout << "Se han eliminado los elementos de la lista y quedaria: " << endl;
     mostrarLista(ordenada);
     cout << "Y en la lista secundaria estan: " << endl;
@@ -198,7 +210,6 @@ main(){
     string id_alfanumerico, tipo_algoritmo;
     float peso_computacional, latencia_max, consumo_energetico;
     int urgencia, x = -1;
-
     while (x != 9){
         system ("cls");
         
@@ -216,7 +227,6 @@ main(){
         cout << " 8. Mover tareas de menor urgencia a una lista de espera" << endl;
         cout << " 9. Salir del menu" << endl;
         cout << "______________________________________________________________________" << endl;
-        
         cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
         while (x < 0 || x > 9){
             cout << "Numero fuera del rango, porfavor ingrese un numero perteneciente al menu";
@@ -232,7 +242,6 @@ main(){
                 cin >> peso_computacional;
                 cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
                 cin >> latencia_max;
-            
                 cout << "5. Ingrese Consumo Energetico (Watts): ";
                 cin >> consumo_energetico;
                 cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
@@ -268,47 +277,31 @@ main(){
                 }
                 break;
             case 4:
-                if (listaVacia(lista)){
+                if (listaVacia(lista))
+                {
                     cout << "la lista esta vacia.";
                 }
-                else{
+                else
+                {
                     cout << "La lista es: ";
                     mostrarLista(listaorg);
                 }
                 break;
-            case 5:{
-                int segundos_espera = 4; // Tiempo del temporizador en segundos
-                cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
-                for (int i = segundos_espera; i > 0; --i) {
-                    cout << i << " segundos restantes..." << endl;
-                    Sleep(1000);
-                }   
+            case 5:
+                cout << "Iniciando la eliminacion, faltan 5 segundos..."  << endl;
                 menorMayor(lista);
                 break;
-            }
-            case 6:{
-                int segundos_espera = 4;
-                cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
-                for (int i = segundos_espera; i > 0; --i) {
-                    cout << i << " segundos restantes..." << endl;
-                    Sleep(1000);
-                }
+            case 6:
+                cout << "Iniciando la eliminacion, faltan 5 segundos..." << endl;
                 descarte(lista);
                 break;
-            } 
             case 7:
                 paseOrbita(lista);
                 break;
-            case 8:{
-                int segundos_espera = 4; // Tiempo del temporizador en segundos
-                cout << "Iniciando el ordenamiento, espere " << segundos_espera << " segundos..." << endl;
-                for (int i = segundos_espera; i > 0; --i) {
-                    cout << i << " segundos restantes..." << endl;
-                    Sleep(1000);
-                }   
+            case 8:
+                cout << "Iniciando la eliminacion, faltan 5 segundos..."  << endl;
                 balanceodeCarga(lista);
                 break;
-            }
             case 9:
                 cout << "Muchas gracias por usar el menu";
                 break;

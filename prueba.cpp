@@ -70,7 +70,7 @@ void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float 
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
 
     if (listaVacia(inicio)){
-      inicio = nuevo;
+    inicio = nuevo;
     }
     else{
         TareaIA *auxiliar = inicio;
