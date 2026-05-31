@@ -1,28 +1,3 @@
-// Proyecto Final: Misión Neuro-Link LEO 
-// Orquestador de Micro-Servicios de IA en Constelaciones Satelitales 
-// 1. El Escenario 
-// Estamos en el año 2026. La constelación de satélites Neuro-Link procesa 
-// terabytes de información mediante micro-agentes de Inteligencia Artificial 
-// antes de enviarlos a la Tierra. El problema es que cada satélite tiene una 
-// "ventana de contacto" limitada con la estación terrestre y una batería solar 
-// finita.  
-// Tu misión es desarrollar el Núcleo de Gestión de Tareas (Kernel) del satélite. 
-// Este sistema debe organizar, priorizar y descartar tareas de IA en tiempo real 
-// utilizando exclusivamente Listas Simplemente Enlazadas mediante el uso de 
-// punteros. 
-
-// 2. Definición del Nodo: TareaIA 
-// Cada nodo de la lista representa una petición de procesamiento que llega al 
-// satélite. La estructura debe definirse estrictamente de la siguiente manera: 
-// • ID de Tarea: Alfanumérico único.  
-// • Tipo de Algoritmo: (Ejemplos: Vision_Artificial, Nlp_Radio, 
-// Analisis_Térmico).  
-// • Peso Computacional: Medido en Teraflops (TFLOPS).  
-// • Latencia Máxima: Tiempo en milisegundos que la tarea puede esperar 
-// antes de ser considerada "basura espacial".  
-// • Consumo Energético: Estimado en Watts (W).  
-// • Urgencia: Escala entera del 1 al 10.  
-// • Puntero de Enlace: Dirección de memoria al siguiente nodo.  
 #include <iostream>
 #include <string>
 #include <windows.h>
@@ -34,7 +9,6 @@ struct TareaIA{
     int urgencia;
     TareaIA *prox;
 };
-
 TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float energia, int urgencia ){
     TareaIA *nuevo = new TareaIA;
     nuevo->id_alfanumerico = id;
@@ -42,18 +16,21 @@ TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float ene
     nuevo->peso_computacional = peso;
     nuevo->latencia_max = latencia;
     nuevo->consumo_energetico = energia;
-    nuevo->urgencia = urgencia;
+    if (urgencia>=1 && urgencia<11)nuevo->urgencia = urgencia;
+    else
+    {
+        cout<<"Numero muy alto, el nivel sera por determinado de 1";
+        urgencia=1;
+        nuevo->urgencia = urgencia;
+    }
     nuevo->prox = NULL;
     return nuevo;
 }
-
 bool listaVacia(TareaIA *inicio){
     return inicio == NULL;
 }
-
 void mostrarLista(TareaIA *inicio){
     TareaIA *mover;
-
     if (!listaVacia(inicio)){
         mover = inicio;
         while (mover != NULL){
@@ -65,7 +42,6 @@ void mostrarLista(TareaIA *inicio){
     else
         cout << "Lista esta vacia" << endl;
 }
-
 void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia){
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
 
@@ -80,13 +56,11 @@ void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float 
         auxiliar->prox = nuevo;
     }
 }
-
 void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia){
     TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
     nuevo->prox = inicio;
     inicio = nuevo;
 }
-
 void menorMayor (TareaIA *&inicio){
     TareaIA *ordenada = NULL;
     TareaIA *actual = inicio;
@@ -128,7 +102,6 @@ void menorMayor (TareaIA *&inicio){
     cout << "REALIZADO! las tareas ordenadas ahora son las siguientes: " << endl;
     mostrarLista(inicio);
 }
-
 void descarte(TareaIA *&inicio){
     TareaIA *actual = inicio; float tiempo; TareaIA *anterior = NULL;
     cout << "Indique el tiempo de espera maximo, se eliminaran los tiempos cuya latencia supere el tiempo de espera: "; cin >> tiempo;
@@ -161,7 +134,6 @@ void descarte(TareaIA *&inicio){
     cout << "La lista actualizada queda como: " << endl;
     mostrarLista(inicio);
 }
-
 void paseOrbita(TareaIA *inicio){
     TareaIA *aux = inicio; int energia_disponible; int contador = 0;
     cout << "Ingrese porfavor la energia disponible para la mision: "; cin >> energia_disponible;
@@ -175,6 +147,12 @@ void paseOrbita(TareaIA *inicio){
             break;
         }
     }
+    int segundos_espera = 4;
+    cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
+    for (int i = segundos_espera; i > 0; --i) {
+        cout << i << " segundos restantes..." << endl;
+        Sleep(1000);
+    }
     cout << "El total de tareas procesables son: " << contador << endl;
     if (aux != NULL){
         cout << "Quedan " << energia_disponible << "W en la nave, por lo que" << aux->prox->id_alfanumerico << " que necesita " << aux->prox->consumo_energetico << "W no se pudo completar.";
@@ -182,10 +160,8 @@ void paseOrbita(TareaIA *inicio){
     else{
         cout << "Se completaron todas las tareas sin problemas.";
     }
-
     
 }
-
 void balanceodeCarga (TareaIA *&inicio){
     TareaIA *actual = inicio; float umbral; float total = 0; TareaIA *ordenada = NULL; TareaIA *listaSecundaria = NULL;
     cout << "Ingrese el maximo peso computacional que podra realizar el satelite: "; cin >> umbral;
@@ -240,7 +216,6 @@ main(){
     string id_alfanumerico, tipo_algoritmo;
     float peso_computacional, latencia_max, consumo_energetico;
     int urgencia, x = -1;
-
     while (x != 9){
         system ("cls");
         
@@ -258,7 +233,6 @@ main(){
         cout << " 8. Mover tareas de menor urgencia a una lista de espera" << endl;
         cout << " 9. Salir del menu" << endl;
         cout << "______________________________________________________________________" << endl;
-        
         cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
         while (x < 0 || x > 9){
             cout << "Numero fuera del rango, porfavor ingrese un numero perteneciente al menu";
@@ -274,7 +248,6 @@ main(){
                 cin >> peso_computacional;
                 cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
                 cin >> latencia_max;
-            
                 cout << "5. Ingrese Consumo Energetico (Watts): ";
                 cin >> consumo_energetico;
                 cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
@@ -310,24 +283,29 @@ main(){
                 }
                 break;
             case 4:
-                if (listaVacia(lista)){
+                if (listaVacia(lista))
+                {
                     cout << "la lista esta vacia.";
                 }
-                else{
+                else
+                {
                     cout << "La lista es: ";
                     mostrarLista(listaorg);
                 }
                 break;
             case 5:
+                cout << "Iniciando la eliminacion, faltan 5 segundos..."  << endl;
                 menorMayor(lista);
                 break;
             case 6:
+                cout << "Iniciando la eliminacion, faltan 5 segundos..." << endl;
                 descarte(lista);
                 break;
             case 7:
                 paseOrbita(lista);
                 break;
             case 8:
+                cout << "Iniciando la eliminacion, faltan 5 segundos..."  << endl;
                 balanceodeCarga(lista);
                 break;
             case 9:
@@ -342,24 +320,3 @@ main(){
     }
     return 0;
 }
-
-// 3. Requerimientos Funcionales  
-// A. Algoritmo de "Green Coding"  
-// El satélite debe operar bajo una política de ahorro de energía. Deben 
-// implementar una función que ordene la lista basándose en el Consumo Energético 
-// (de menor a mayor).  
-// B. Protocolo de Descarte por Latencia 
-// Las tareas en órbita caducan rápido. El sistema debe recorrer la lista y eliminar 
-// automáticamente todos los nodos cuyo tiempo de espera supere su Latencia 
-// Máxima. Esta función es vital para liberar memoria RAM en el hardware limitado 
-// del satélite.  
-// C. Simulador de "Pase de Órbita" 
-// Antes de entrar en la zona de sombra (donde no hay carga solar), el sistema 
-// recibe un parámetro de Energía Disponible (ejemplo 500W). El programa debe 
-// calcular cuántas tareas de la lista se pueden procesar antes de agotar la batería, 
-// recorriendo la lista y acumulando el campo Consumo Energético.  
-// D. Balanceo de Carga LEO 
-// Si el Peso Computacional total de la lista principal excede un umbral crítico de 
-// procesamiento del procesador satelital, los nodos excedentes de menor urgencia 
-// deben ser "movidos" a una Lista de Espera Secundaria. 
-
