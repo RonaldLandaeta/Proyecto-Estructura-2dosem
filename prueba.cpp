@@ -242,7 +242,12 @@ main(){
             case 1:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-                cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
+                cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
+                cout<<"Vision_Artificial"<<endl;
+                cout<<"Nlp_Radio"<<endl;
+                cout<<"Analisis_Termico"<<endl;
+                cout<<"Telemetria_Predictiva"<<endl;
+                cout<<"Cifrado_Cuantico"<<endl;
                 cin >> tipo_algoritmo;
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
@@ -260,7 +265,12 @@ main(){
             case 2:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-                cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
+                cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
+                cout<<"Vision_Artificial"<<endl;
+                cout<<"Nlp_Radio"<<endl;
+                cout<<"Analisis_Termico"<<endl;
+                cout<<"Telemetria_Predictiva"<<endl;
+                cout<<"Cifrado_Cuantico"<<endl;
                 cin >> tipo_algoritmo;
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
@@ -274,10 +284,12 @@ main(){
                 insertarUltimo(listaorg, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
                 break;
             case 3:
-                if (listaVacia(lista)){
+                if (listaVacia(lista))
+                {
                     cout << "la lista esta vacia.";
                 }
-                else{
+                else
+                {
                     cout << "La lista es: ";
                     mostrarLista(lista);
                 }
