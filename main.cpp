@@ -212,7 +212,6 @@ main(){
     int urgencia, x = -1;
     while (x != 9){
         system ("cls");
-        
         cout << "------------ BIENVENIDO AL MENU DE LA MISION NEURO-LINK ------------"<< endl;
         cout << "con el siguiente menu podra acceder a distintas secciones del menu" << endl;
         cout << "porfavor presione correctamente los numeros indicados para comenzar" << endl;
@@ -236,7 +235,12 @@ main(){
             case 1:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-                cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
+                cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
+                cout<<"Vision_Artificial"<<endl;
+                cout<<"Nlp_Radio"<<endl;
+                cout<<"Analisis_Termico"<<endl;
+                cout<<"Telemetria_Predictiva"<<endl;
+                cout<<"Cifrado_Cuantico"<<endl;
                 cin >> tipo_algoritmo;
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
@@ -254,7 +258,12 @@ main(){
             case 2:
                 cout << "1. Ingrese ID Alfanumerico unico: ";
                 cin >> id_alfanumerico;
-                cout << "2. Ingrese Tipo de Algoritmo (sin espacios): "; 
+                cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
+                cout<<"Vision_Artificial"<<endl;
+                cout<<"Nlp_Radio"<<endl;
+                cout<<"Analisis_Termico"<<endl;
+                cout<<"Telemetria_Predictiva"<<endl;
+                cout<<"Cifrado_Cuantico"<<endl;
                 cin >> tipo_algoritmo;
                 cout << "3. Ingrese Peso Computacional (TFLOPS): ";
                 cin >> peso_computacional;
@@ -308,8 +317,8 @@ main(){
     }
         if (x != 9) {
             cout << "Presione ENTER para continuar...";
-            cin.ignore(10000, '\n'); // Limpia la basura del teclado
-            cin.get();               // Pausa hasta que presiones Enter
+            cin.ignore(10000, '\n'); 
+            cin.get();               
         }
     }
     return 0;
