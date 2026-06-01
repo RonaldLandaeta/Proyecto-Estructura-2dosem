@@ -16,13 +16,7 @@ TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float ene
     nuevo->peso_computacional = peso;
     nuevo->latencia_max = latencia;
     nuevo->consumo_energetico = energia;
-    if (urgencia>=1 && urgencia<11)nuevo->urgencia = urgencia;
-    else
-    {
-        cout<<"Numero muy alto, el nivel sera por determinado de 1";
-        urgencia=1;
-        nuevo->urgencia = urgencia;
-    }
+    nuevo->urgencia = urgencia;
     nuevo->prox = NULL;
     return nuevo;
 }
@@ -218,7 +212,6 @@ main(){
     int urgencia, x = -1;
     while (x != 9){
         system ("cls");
-        
         cout << "------------ BIENVENIDO AL MENU DE LA MISION NEURO-LINK ------------"<< endl;
         cout << "con el siguiente menu podra acceder a distintas secciones del menu" << endl;
         cout << "porfavor presione correctamente los numeros indicados para comenzar" << endl;
@@ -284,12 +277,10 @@ main(){
                 insertarUltimo(listaorg, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
                 break;
             case 3:
-                if (listaVacia(lista))
-                {
+                if (listaVacia(lista)){
                     cout << "la lista esta vacia.";
                 }
-                else
-                {
+                else{
                     cout << "La lista es: ";
                     mostrarLista(lista);
                 }
@@ -326,8 +317,8 @@ main(){
     }
         if (x != 9) {
             cout << "Presione ENTER para continuar...";
-            cin.ignore(10000, '\n'); // Limpia la basura del teclado
-            cin.get();               // Pausa hasta que presiones Enter
+            cin.ignore(10000, '\n'); 
+            cin.get();               
         }
     }
     return 0;
