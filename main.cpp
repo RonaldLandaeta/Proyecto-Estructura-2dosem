@@ -76,7 +76,8 @@ void menorMayor (TareaIA *&inicio){
     while (actual != NULL)
     {
         TareaIA *siguiente = actual->prox;
-        if (ordenada == NULL || actual->consumo_energetico <= ordenada->consumo_energetico) {
+        if (ordenada == NULL || actual->consumo_energetico <= ordenada->consumo_energetico) 
+        {
             actual->prox = ordenada; 
             ordenada = actual;
         }                          
@@ -104,8 +105,11 @@ void menorMayor (TareaIA *&inicio){
 }
 void descarte(TareaIA *&inicio)
 {
-    TareaIA *actual = inicio; float tiempo; TareaIA *anterior = NULL;
-    cout << "Indique el tiempo de espera maximo, se eliminaran los tiempos cuya latencia supere el tiempo de espera: "; cin >> tiempo;
+    TareaIA *actual = inicio; 
+    TareaIA *anterior = NULL;
+    float tiempo;
+    cout << "Indique el tiempo de espera maximo, se eliminaran los tiempos cuya latencia supere el tiempo de espera: "; 
+    cin >> tiempo;
     while (actual != NULL)
     {
         if (tiempo > actual->latencia_max){
@@ -141,7 +145,9 @@ void descarte(TareaIA *&inicio)
 }
 void paseOrbita(TareaIA *inicio)
 {
-    TareaIA *aux = inicio; int energia_disponible; int contador = 0;
+    TareaIA *aux = inicio; 
+    int energia_disponible; 
+    int contador = 0;
     cout << "Ingrese porfavor la energia disponible para la mision: "; cin >> energia_disponible;
     while (aux != NULL)
     {
@@ -231,13 +237,75 @@ void balanceodeCarga (TareaIA *&inicio)
     cout << "Y en la lista secundaria estan: " << endl;
     mostrarLista(listaSecundaria);
 }
+// El sistema debe eliminar de forma automarica el nodo que presente la peor eficiencia operativa definida matematicamente como la menor relacion entre su urgencia y su consumo energetico.... Urgencia/consumo
+void eliminarpeoreficiencia(TareaIA *&inicio)
+{
+    if (listaVacia(inicio)) {
+        cout << "La lista no cuenta con suficientes elementos" << endl;
+        return;
+    }
+    TareaIA *peor = inicio;
+    TareaIA *anterior = inicio;
+    TareaIA *aux = inicio->prox;
+    {
+        while(aux!=nullptr){
+            int peor_urgencia=peor->urgencia;
+            int peor_consumo=peor->consumo_energetico;
+            double peor_caso = peor_urgencia/peor_consumo;
+            int urgencia = aux->urgencia;
+            int consumo = aux->consumo_energetico;
+            double caso = urgencia/consumo;
+                if (peor_caso<caso){
+                anterior=aux;
+                aux=aux->prox;
+            }
+                else{
+                    peor=aux;
+                    anterior=aux;
+                    aux=aux->prox;
+                }
+        }
+        if (peor == inicio)
+        {
+            inicio = inicio->prox;
+            cout << "la tarea a eliminar es1 " << endl;
+            cout << peor << endl;
+            cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
+            delete peor;
+            cout << "La tarea ha sido eliminada";
+            cout << "La lista nueva es: " << endl;
+            mostrarLista(inicio);
+        }
+        else
+        {
+            TareaIA *prev = inicio;
+            while (prev->prox != peor && prev->prox != nullptr)
+            {
+                prev = prev->prox;
+            }
+            if (prev->prox == peor)
+            {  
+                prev->prox = peor->prox;
+                cout << "la tarea a eliminar es2 " << endl;
+                cout << peor << endl;
+                cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
+                delete peor;
+                cout << "La tarea ha sido eliminada";
+                cout << "La lista nueva es: " << endl;
+                mostrarLista(inicio);
+            }
+        }
+        return;
+    }
+}
+
 main()
 {
     TareaIA *lista = NULL; TareaIA *listaorg = NULL;
     string id_alfanumerico, tipo_algoritmo;
     float peso_computacional, latencia_max, consumo_energetico;
     int urgencia, x = -1;
-    while (x != 9){
+    while (x != 10){
         system ("cls");
         cout << "------------ BIENVENIDO AL MENU DE LA MISION NEURO-LINK ------------"<< endl;
         cout << "con el siguiente menu podra acceder a distintas secciones del menu" << endl;
@@ -251,10 +319,11 @@ main()
         cout << " 6. Eliminar nodos que supere un dato determinado de latencia" << endl;
         cout << " 7. Procesar cuantas tareas antes de agotar la bateria" << endl;
         cout << " 8. Mover tareas de menor urgencia a una lista de espera" << endl;
-        cout << " 9. Salir del menu" << endl;
+        cout << " 9. eliminar peor eficiencia" << endl;
+        cout << " 10. Salir del menu" << endl;
         cout << "______________________________________________________________________" << endl;
         cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
-        while (x < 0 || x > 9)
+        while (x < 0 || x > 10)
         {
             cout << "Numero fuera del rango, porfavor ingrese un numero perteneciente al menu";
             cin >> x;
@@ -343,10 +412,14 @@ main()
                 balanceodeCarga(lista);
                 break;
             case 9:
-                cout << "Muchas gracias por usar el menu";
+                cout << "Procediendo con la eliminacion de eficiencia"<<endl;
+                eliminarpeoreficiencia(lista);
+                break;
+            case 10:
+            cout << "Muchas gracias por usar el menu";
                 break;
     }
-        if (x != 9) {
+        if (x != 10) {
             cout << "Presione ENTER para continuar...";
             cin.ignore(10000, '\n'); 
             cin.get();               
