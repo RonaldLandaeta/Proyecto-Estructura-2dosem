@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <random>
+#include <chrono>
 #include <windows.h>
 using namespace std;
 
@@ -10,15 +12,73 @@ struct TareaIA
     int urgencia;
     TareaIA *prox;
 };
-TareaIA *crearNodo(string id, string tipo, float peso, float latencia, float energia, int urgencia )
+string generarID()
+{
+    static int contador = 1; 
+    string idResultante = "TASK-" + to_string(contador);
+    contador++; 
+    return idResultante;
+}
+string Tipo_algoritmo_aleatorio() {
+    string catalogo[] = {
+        "Vision_Artificial", 
+        "Nlp_Radio", 
+        "Analisis_Termico", 
+        "Telemetria_Predictiva", 
+        "Cifrado_Cuantico"
+    };
+    static std::random_device rd;  
+    static std::mt19937 motor(rd()); 
+    std::uniform_int_distribution<int> dist(0, 4); // Elige un índice del 0 al 4
+    return catalogo[dist(motor)];
+}
+int datos_Aleatorios()
+{
+    unsigned semilla = chrono::high_resolution_clock::now().time_since_epoch().count();
+    static mt19937 motor(semilla);
+    std::uniform_int_distribution<int> dist(0, 100); 
+    return dist(motor);
+}
+int urgencia_aleatoria()
+{
+    unsigned semilla = chrono::high_resolution_clock::now().time_since_epoch().count();  
+    static mt19937 motor(semilla);
+    std::uniform_int_distribution<int> dist(1, 10); 
+    return dist(motor);
+}
+TareaIA *crearNodo(string tipo, float peso, float latencia, float energia, int urgencia )
 {
     TareaIA *nuevo = new TareaIA;
-    nuevo->id_alfanumerico = id;
+    nuevo->id_alfanumerico = generarID();
     nuevo->tipo_algoritmo = tipo;
     nuevo->peso_computacional = peso;
     nuevo->latencia_max = latencia;
     nuevo->consumo_energetico = energia;
     nuevo->urgencia = urgencia;
+    nuevo->prox = NULL;
+    return nuevo;
+}
+TareaIA *crearNodo_semi_Aleatorio(float peso, float latencia, float energia, int urgencia )
+{
+    TareaIA *nuevo = new TareaIA;
+    nuevo->id_alfanumerico = generarID();
+    nuevo->tipo_algoritmo = Tipo_algoritmo_aleatorio();
+    nuevo->peso_computacional = peso;
+    nuevo->latencia_max = latencia;
+    nuevo->consumo_energetico = energia;
+    nuevo->urgencia = urgencia;
+    nuevo->prox = NULL;
+    return nuevo;
+}
+TareaIA *crearNodo_Aleatorio()
+{
+    TareaIA *nuevo = new TareaIA;
+    nuevo->id_alfanumerico = generarID();
+    nuevo->tipo_algoritmo = Tipo_algoritmo_aleatorio();
+    nuevo->peso_computacional = datos_Aleatorios();
+    nuevo->latencia_max = datos_Aleatorios();
+    nuevo->consumo_energetico = datos_Aleatorios();
+    nuevo->urgencia = urgencia_aleatoria();
     nuevo->prox = NULL;
     return nuevo;
 }
@@ -42,9 +102,9 @@ void mostrarLista(TareaIA *inicio)
     else
         cout << "Lista esta vacia" << endl;
 }
-void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia)
+void insertarUltimo(TareaIA *&inicio, string tipo, float peso, float latencia, float energia, int urgencia)
 {
-    TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
+    TareaIA *nuevo = crearNodo(tipo, peso, latencia, energia, urgencia);
     if (listaVacia(inicio))
     {
     inicio = nuevo;
@@ -59,9 +119,55 @@ void insertarUltimo(TareaIA *&inicio, string id, string tipo, float peso, float 
         auxiliar->prox = nuevo;
     }
 }
-void insertarPrimero(TareaIA *&inicio, string id, string tipo, float peso, float latencia, float energia, int urgencia)
+void insertarUltimo_semi_Aleatorio(TareaIA *&inicio,float peso, float latencia, float energia, int urgencia)
 {
-    TareaIA *nuevo = crearNodo(id, tipo, peso, latencia, energia, urgencia);
+    TareaIA *nuevo = crearNodo_semi_Aleatorio(peso, latencia, energia, urgencia);
+    if (listaVacia(inicio))
+    {
+    inicio = nuevo;
+    }
+    else
+    {
+        TareaIA *auxiliar = inicio;
+        while (auxiliar->prox != NULL)
+        {
+            auxiliar = auxiliar->prox;
+        }
+        auxiliar->prox = nuevo;
+    }
+}
+void insertarUltimo_Aleatorio(TareaIA *&inicio)
+{
+    TareaIA *nuevo = crearNodo_Aleatorio();
+    if (listaVacia(inicio))
+    {
+    inicio = nuevo;
+    }
+    else
+    {
+        TareaIA *auxiliar = inicio;
+        while (auxiliar->prox != NULL)
+        {
+            auxiliar = auxiliar->prox;
+        }
+        auxiliar->prox = nuevo;
+    }
+}
+void insertarPrimero(TareaIA *&inicio, string tipo, float peso, float latencia, float energia, int urgencia)
+{
+    TareaIA *nuevo = crearNodo(tipo, peso, latencia, energia, urgencia);
+    nuevo->prox = inicio;
+    inicio = nuevo;
+}
+void insertarPrimero_semi_aleatorio(TareaIA *&inicio,float peso, float latencia, float energia, int urgencia)
+{
+    TareaIA *nuevo = crearNodo_semi_Aleatorio(peso, latencia, energia, urgencia);
+    nuevo->prox = inicio;
+    inicio = nuevo;
+}
+void insertarPrimero_Aleatorio(TareaIA *&inicio)
+{
+    TareaIA *nuevo = crearNodo_Aleatorio();
     nuevo->prox = inicio;
     inicio = nuevo;
 }
@@ -95,7 +201,7 @@ void menorMayor (TareaIA *&inicio){
     }
     inicio = ordenada;
     int segundos_espera = 4; 
-    cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
+    cout << "Iniciando el ordenamiento, faltan " << 5 << " segundos..." << endl;
         for (int i = segundos_espera; i > 0; --i) {
             cout << i << " segundos restantes..." << endl;
             Sleep(1000);
@@ -238,66 +344,66 @@ void balanceodeCarga (TareaIA *&inicio)
     mostrarLista(listaSecundaria);
 }
 // El sistema debe eliminar de forma automarica el nodo que presente la peor eficiencia operativa definida matematicamente como la menor relacion entre su urgencia y su consumo energetico.... Urgencia/consumo
-void eliminarpeoreficiencia(TareaIA *&inicio)
-{
-    if (listaVacia(inicio)) {
-        cout << "La lista no cuenta con suficientes elementos" << endl;
-        return;
-    }
-    TareaIA *peor = inicio;
-    TareaIA *anterior = inicio;
-    TareaIA *aux = inicio->prox;
-    {
-        while(aux!=nullptr){
-            int peor_urgencia=peor->urgencia;
-            int peor_consumo=peor->consumo_energetico;
-            double peor_caso = peor_urgencia/peor_consumo;
-            int urgencia = aux->urgencia;
-            int consumo = aux->consumo_energetico;
-            double caso = urgencia/consumo;
-                if (peor_caso<caso){
-                anterior=aux;
-                aux=aux->prox;
-            }
-                else{
-                    peor=aux;
-                    anterior=aux;
-                    aux=aux->prox;
-                }
-        }
-        if (peor == inicio)
-        {
-            inicio = inicio->prox;
-            cout << "la tarea a eliminar es1 " << endl;
-            cout << peor << endl;
-            cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
-            delete peor;
-            cout << "La tarea ha sido eliminada";
-            cout << "La lista nueva es: " << endl;
-            mostrarLista(inicio);
-        }
-        else
-        {
-            TareaIA *prev = inicio;
-            while (prev->prox != peor && prev->prox != nullptr)
-            {
-                prev = prev->prox;
-            }
-            if (prev->prox == peor)
-            {  
-                prev->prox = peor->prox;
-                cout << "la tarea a eliminar es2 " << endl;
-                cout << peor << endl;
-                cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
-                delete peor;
-                cout << "La tarea ha sido eliminada";
-                cout << "La lista nueva es: " << endl;
-                mostrarLista(inicio);
-            }
-        }
-        return;
-    }
-}
+// void eliminarpeoreficiencia(TareaIA *&inicio)
+// {
+//     if (listaVacia(inicio)) {
+//         cout << "La lista no cuenta con suficientes elementos" << endl;
+//         return;
+//     }
+//     TareaIA *peor = inicio;
+//     TareaIA *anterior = inicio;
+//     TareaIA *aux = inicio->prox;
+//     {
+//         while(aux!=nullptr){
+//             int peor_urgencia=peor->urgencia;
+//             int peor_consumo=peor->consumo_energetico;
+//             double peor_caso = peor_urgencia/peor_consumo;
+//             int urgencia = aux->urgencia;
+//             int consumo = aux->consumo_energetico;
+//             double caso = urgencia/consumo;
+//                 if (peor_caso<caso){
+//                 anterior=aux;
+//                 aux=aux->prox;
+//             }
+//                 else{
+//                     peor=aux;
+//                     anterior=aux;
+//                     aux=aux->prox;
+//                 }
+//         }
+//         if (peor == inicio)
+//         {
+//             inicio = inicio->prox;
+//             cout << "la tarea a eliminar es1 " << endl;
+//             cout << peor << endl;
+//             cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
+//             delete peor;
+//             cout << "La tarea ha sido eliminada";
+//             cout << "La lista nueva es: " << endl;
+//             mostrarLista(inicio);
+//         }
+//         else
+//         {
+//             TareaIA *prev = inicio;
+//             while (prev->prox != peor && prev->prox != nullptr)
+//             {
+//                 prev = prev->prox;
+//             }
+//             if (prev->prox == peor)
+//             {  
+//                 prev->prox = peor->prox;
+//                 cout << "la tarea a eliminar es2 " << endl;
+//                 cout << peor << endl;
+//                 cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
+//                 delete peor;
+//                 cout << "La tarea ha sido eliminada";
+//                 cout << "La lista nueva es: " << endl;
+//                 mostrarLista(inicio);
+//             }
+//         }
+//         return;
+//     }
+// }
 
 main()
 {
@@ -311,8 +417,9 @@ main()
         cout << "con el siguiente menu podra acceder a distintas secciones del menu" << endl;
         cout << "porfavor presione correctamente los numeros indicados para comenzar" << endl;
         cout << "                                                                               " << endl;
-        cout << " 1. Insertar al inicio de la lista" << endl;
-        cout << " 2. Insertar al final de la lista" << endl;
+        cout << " 0. Modo desarrollador" << endl;
+        cout << " 1. Insertar en lista de forma manual (Principio/Final)" << endl;
+        cout << " 2. Insertar en lista de forma aleatoria" << endl;
         cout << " 3. Imprimir la lista actual" << endl;
         cout << " 4. Imprimir la lista orignal" << endl;
         cout << " 5. Ordenar la lista en funcion del consumo energetico" << endl;
@@ -330,49 +437,92 @@ main()
         }
         switch(x)
         {
+            case 0:
+                break;
             case 1:
-                cout << "1. Ingrese ID Alfanumerico unico: ";
-                cin >> id_alfanumerico;
-                cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
-                cout<<"Vision_Artificial"<<endl;
-                cout<<"Nlp_Radio"<<endl;
-                cout<<"Analisis_Termico"<<endl;
-                cout<<"Telemetria_Predictiva"<<endl;
-                cout<<"Cifrado_Cuantico"<<endl;
-                cin >> tipo_algoritmo;
-                cout << "3. Ingrese Peso Computacional (TFLOPS): ";
-                cin >> peso_computacional;
-                cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
-                cin >> latencia_max;
-                cout << "5. Ingrese Consumo Energetico (Watts): ";
-                cin >> consumo_energetico;
-                cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
-                cin >> urgencia;
-                insertarPrimero(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
-                insertarPrimero(listaorg, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
-                cout << "La lista actual es: ";
-                mostrarLista(lista);
+                cout<<"Desea insertar al principio (1), o al final (2)?: "<<endl;
+                int y; cin>>y;
+                if(y==1)
+                {
+                    cout<<"La tarea sera insertada al inicio"<<endl;
+                    Sleep(1000);
+                    cout << "1. Se te ha generado un id predeterminado..."<<endl;
+                    Sleep(1000);
+                    cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
+                    cin >> tipo_algoritmo;
+                    cout << "3. Ingrese Peso Computacional (TFLOPS): ";
+                    cin >> peso_computacional;
+                    cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
+                    cin >> latencia_max;
+                    cout << "5. Ingrese Consumo Energetico (Watts): ";
+                    cin >> consumo_energetico;
+                    cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
+                    cin >> urgencia;
+                    cout << "La lista actual es: ";
+                    insertarPrimero(lista,tipo_algoritmo,peso_computacional,latencia_max,consumo_energetico,urgencia);
+                    mostrarLista(lista);
+                    break;
+                }
+                if (y==2)
+                {
+                    cout<<"La tarea sera insertada al final"<<endl;
+                    Sleep(1000);
+                    cout << "1. Se ha definido un id predeterminado..."<<endl;
+                    Sleep(1000);
+                    cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
+                    cout<<"Vision_Artificial"<<endl;
+                    cout<<"Nlp_Radio"<<endl;
+                    cout<<"Analisis_Termico"<<endl;
+                    cout<<"Telemetria_Predictiva"<<endl;
+                    cout<<"Cifrado_Cuantico"<<endl;
+                    cin >> tipo_algoritmo;
+                    cout << "3. Ingrese Peso Computacional (TFLOPS): ";
+                    cin >> peso_computacional;
+                    cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
+                    cin >> latencia_max;
+                    cout << "5. Ingrese Consumo Energetico (Watts): ";
+                    cin >> consumo_energetico;
+                    cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
+                    cin >> urgencia;
+                    cout << "La lista actual es: ";
+                    insertarUltimo(lista,tipo_algoritmo,peso_computacional,latencia_max,consumo_energetico,urgencia);
+                    mostrarLista(lista);
+                    break;
+                }
+                else
+                {
+                    cout<<"opcion no valida hjpt"<<endl;
+                    break;
+                }
                 break;
             case 2:
-                cout << "1. Ingrese ID Alfanumerico unico: ";
-                cin >> id_alfanumerico;
-                cout << "2. Ingrese Tipo de Algoritmo, escogiendo alguno de los siguientes casos: (sin espacios): ";
-                cout<<"Vision_Artificial"<<endl;
-                cout<<"Nlp_Radio"<<endl;
-                cout<<"Analisis_Termico"<<endl;
-                cout<<"Telemetria_Predictiva"<<endl;
-                cout<<"Cifrado_Cuantico"<<endl;
-                cin >> tipo_algoritmo;
-                cout << "3. Ingrese Peso Computacional (TFLOPS): ";
-                cin >> peso_computacional;
-                cout << "4. Ingrese Latencia Maxima (tiempo en ms): ";
-                cin >> latencia_max;
-                cout << "5. Ingrese Consumo Energetico (Watts): ";
-                cin >> consumo_energetico;
-                cout << "6. Ingrese Nivel de Urgencia (1 al 10): ";
-                cin >> urgencia;
-                insertarUltimo(lista, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
-                insertarUltimo(listaorg, id_alfanumerico, tipo_algoritmo, peso_computacional, latencia_max, consumo_energetico, urgencia);
+                cout<<"Se empezo el procedimiendo de creacion de Tarea aleatoria"<<endl;
+                cout<<"Desea insertar al principio (1), o al final (2)?: "<<endl;
+                int z; cin>>z;
+                if (z==1)
+                {
+                    cout<<"Tarea situada de primera, prepadando proceso de creacion..."<<endl;
+                    Sleep(1000);
+                    insertarPrimero_Aleatorio(lista);
+                    cout<<"Tarea creada y situada con extio"<<endl;
+                    cout << "La lista actual es: ";
+                    mostrarLista(lista);
+                    break;
+                }
+                if (z==2)
+                {
+                    cout<<"Tarea situada de ultima, prepadando proceso de creacion..."<<endl;
+                    Sleep(1000);
+                    insertarUltimo_Aleatorio(lista);
+                    cout<<"Tarea creada y situada con extio"<<endl;
+                    cout << "La lista actual es: ";
+                    mostrarLista(lista);
+                    break;
+                }
+                else 
+                {
+                    cout<<"Eliga bien perro"<<endl;
+                }
                 break;
             case 3:
                 if (listaVacia(lista))
@@ -397,7 +547,6 @@ main()
                 }
                 break;
             case 5:
-                cout << "Iniciando la eliminacion, faltan 5 segundos..."  << endl;
                 menorMayor(lista);
                 break;
             case 6:
@@ -411,10 +560,10 @@ main()
                 cout << "Iniciando la eliminacion, faltan 5 segundos..."  << endl;
                 balanceodeCarga(lista);
                 break;
-            case 9:
-                cout << "Procediendo con la eliminacion de eficiencia"<<endl;
-                eliminarpeoreficiencia(lista);
-                break;
+            // case 9:
+            //     cout << "Procediendo con la eliminacion de eficiencia"<<endl;
+            //     eliminarpeoreficiencia(lista);
+            //     break;
             case 10:
             cout << "Muchas gracias por usar el menu";
                 break;
