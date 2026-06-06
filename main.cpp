@@ -438,6 +438,18 @@ main()
         switch(x)
         {
             case 0:
+                int i;
+                cout<<"Cuantas tareas quiere en su lista capitaa?"<<endl;
+                cin>>i;
+                for (i>=0;i--;)
+                {   
+                    insertarUltimo_Aleatorio(lista);
+                    Sleep(1000);
+                    cout<<"Lista actual: "<<endl;
+                    mostrarLista(lista);
+                }
+                cout<<"Todos las tareas han sido agregadas... hasta pronto capitan, cambio y fuera."<<endl;
+                Sleep(1000);
                 break;
             case 1:
                 cout<<"Desea insertar al principio (1), o al final (2)?: "<<endl;
