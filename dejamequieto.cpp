@@ -13,14 +13,17 @@ struct TareaIA
     int urgencia;
     TareaIA *prox;
 };
+
+// CORRECCIÓN: Se separa el contador estático en su propia función para poder sincronizarlo desde cargarDesdeArchivo
+static int contadorID = 1;
+
 string generarID()
 {
-    //static sale
-    static int contador = 1; 
-    string idResultante = "TASK-" + to_string(contador);
-    contador++; 
+    string idResultante = "TASK-" + to_string(contadorID);
+    contadorID++;
     return idResultante;
 }
+
 string Tipo_algoritmo_aleatorio() {
     string catalogo[] = {
         "Vision_Artificial", 
@@ -31,23 +34,25 @@ string Tipo_algoritmo_aleatorio() {
     };
     static std::random_device rd;  
     static std::mt19937 motor(rd()); 
-    std::uniform_int_distribution<int> dist(0, 4); // Elige un índice del 0 al 4
+    std::uniform_int_distribution<int> dist(0, 4);
     return catalogo[dist(motor)];
 }
+
+// CORRECCIÓN: Un único motor global para todos los datos aleatorios
+static std::mt19937 motorGlobal(std::random_device{}());
+
 int datos_Aleatorios()
 {
-    unsigned semilla = chrono::high_resolution_clock::now().time_since_epoch().count();
-    static mt19937 motor(semilla);
     std::uniform_int_distribution<int> dist(0, 100); 
-    return dist(motor);
+    return dist(motorGlobal);
 }
+
 int urgencia_aleatoria()
 {
-    unsigned semilla = chrono::high_resolution_clock::now().time_since_epoch().count();  
-    static mt19937 motor(semilla);
     std::uniform_int_distribution<int> dist(1, 10); 
-    return dist(motor);
+    return dist(motorGlobal);
 }
+
 TareaIA *crearNodo_Aleatorio()
 {
     TareaIA *nuevo = new TareaIA;
@@ -57,13 +62,14 @@ TareaIA *crearNodo_Aleatorio()
     nuevo->latencia_max = datos_Aleatorios();
     nuevo->consumo_energetico = datos_Aleatorios();
     nuevo->urgencia = urgencia_aleatoria();
-    nuevo->prox = NULL;
+    nuevo->prox = nullptr;
     return nuevo;
 }
-// NUEVA FUNCIÓN: Permite clonar un nodo para guardarlo en la lista original sin romper los enlaces de memoria
+
+// Permite clonar un nodo para guardarlo en la lista original sin romper los enlaces de memoria
 TareaIA *clonarNodo(TareaIA *origen)
 {
-    if (origen == NULL) return NULL;
+    if (origen == nullptr) return nullptr;
     TareaIA *nuevo = new TareaIA;
     nuevo->id_alfanumerico = origen->id_alfanumerico;
     nuevo->tipo_algoritmo = origen->tipo_algoritmo;
@@ -71,20 +77,22 @@ TareaIA *clonarNodo(TareaIA *origen)
     nuevo->latencia_max = origen->latencia_max;
     nuevo->consumo_energetico = origen->consumo_energetico;
     nuevo->urgencia = origen->urgencia;
-    nuevo->prox = NULL;
+    nuevo->prox = nullptr;
     return nuevo;
 }
+
 bool listaVacia(TareaIA *inicio)
 {
-    return inicio == NULL;
+    return inicio == nullptr;
 }
+
 void mostrarLista(TareaIA *inicio)
 {
     TareaIA *mover;
     if (!listaVacia(inicio))
     {
         mover = inicio;
-        while (mover != NULL)
+        while (mover != nullptr)
         {
             cout << " |" << mover->id_alfanumerico << ", " << mover->tipo_algoritmo << ", " << mover->peso_computacional << ", " << mover->latencia_max << ", " << mover->consumo_energetico << ", " << mover->urgencia << "|->";
             mover = mover->prox;
@@ -94,41 +102,63 @@ void mostrarLista(TareaIA *inicio)
     else
         cout << "Lista esta vacia" << endl;
 }
-void insertarUltimo_Aleatorio(TareaIA *&inicio)
+
+// Inserción al principio usando un nodo ya existente
+void insertarPrimero_Nodo(TareaIA *&inicio, TareaIA *nuevo)
 {
-    TareaIA *nuevo = crearNodo_Aleatorio();
+    nuevo->prox = inicio;
+    inicio = nuevo;
+}
+
+void insertarUltimo_Nodo(TareaIA *&inicio, TareaIA *nuevo)
+{
     if (listaVacia(inicio))
     {
-    inicio = nuevo;
+        inicio = nuevo;
     }
     else
     {
         TareaIA *auxiliar = inicio;
-        while (auxiliar->prox != NULL)
+        while (auxiliar->prox != nullptr)
         {
             auxiliar = auxiliar->prox;
         }
         auxiliar->prox = nuevo;
     }
 }
+
+void insertarUltimo_Aleatorio(TareaIA *&inicio)
+{
+    TareaIA *nuevo = crearNodo_Aleatorio();
+    insertarUltimo_Nodo(inicio, nuevo);
+}
+
 void insertarPrimero_Aleatorio(TareaIA *&inicio)
 {
     TareaIA *nuevo = crearNodo_Aleatorio();
-    nuevo->prox = inicio;
-    inicio = nuevo;
+    insertarPrimero_Nodo(inicio, nuevo);
 }
-void menorMayor (TareaIA *&inicio){
-    TareaIA *ordenada = NULL;
+
+void menorMayor(TareaIA *&inicio)
+{
+    TareaIA *ordenada = nullptr;
     TareaIA *actual = inicio;
-    if (inicio == NULL)
+    if (inicio == nullptr)
     { 
         cout << "No hay suficientes tareas en orbita para ordenar." << endl;
         return;
     }
-    while (actual != NULL)
+    // CORRECCIÓN: El countdown va ANTES del ordenamiento para que tenga sentido
+    int segundos_espera = 4;
+    cout << "Iniciando el ordenamiento, faltan " << segundos_espera << " segundos..." << endl;
+    for (int i = segundos_espera; i > 0; --i) {
+        cout << i << " segundos restantes..." << endl;
+        Sleep(1000);
+    }
+    while (actual != nullptr)
     {
         TareaIA *siguiente = actual->prox;
-        if (ordenada == NULL || actual->consumo_energetico <= ordenada->consumo_energetico) 
+        if (ordenada == nullptr || actual->consumo_energetico <= ordenada->consumo_energetico) 
         {
             actual->prox = ordenada; 
             ordenada = actual;
@@ -136,7 +166,7 @@ void menorMayor (TareaIA *&inicio){
         else 
         {
             TareaIA *aux = ordenada;
-            while (aux->prox != NULL && aux->prox->consumo_energetico < actual->consumo_energetico) 
+            while (aux->prox != nullptr && aux->prox->consumo_energetico < actual->consumo_energetico) 
             {
                 aux = aux->prox;
             }
@@ -146,27 +176,30 @@ void menorMayor (TareaIA *&inicio){
         actual = siguiente;
     }
     inicio = ordenada;
-    int segundos_espera = 4; 
-    cout << "Iniciando el ordenamiento, faltan " << 5 << " segundos..." << endl;
-        for (int i = segundos_espera; i > 0; --i) {
-            cout << i << " segundos restantes..." << endl;
-            Sleep(1000);
-        }   
     cout << "REALIZADO! las tareas ordenadas ahora son las siguientes: " << endl;
     mostrarLista(inicio);
 }
+
 void descarte(TareaIA *&inicio)
 {
     TareaIA *actual = inicio; 
-    TareaIA *anterior = NULL;
+    TareaIA *anterior = nullptr;
     float tiempo;
     cout << "Indique el tiempo de espera maximo, se eliminaran los tiempos cuya latencia supere el tiempo de espera: "; 
     cin >> tiempo;
-    while (actual != NULL)
+    // CORRECCIÓN: El countdown va ANTES de la eliminación
+    int segundos_espera = 4;
+    cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
+    for (int i = segundos_espera; i > 0; --i) 
+    {
+        cout << i << " segundos restantes..." << endl;
+        Sleep(1000);
+    }
+    while (actual != nullptr)
     {
         if (tiempo > actual->latencia_max){
             TareaIA *borrar = actual;
-            if (anterior == NULL)
+            if (anterior == nullptr)
             {
                 inicio = actual->prox;     
                 actual = inicio;            
@@ -184,24 +217,18 @@ void descarte(TareaIA *&inicio)
             actual = actual->prox;
         }
     }
-    int segundos_espera = 4;
-    cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
-        for (int i = segundos_espera; i > 0; --i) 
-        {
-            cout << i << " segundos restantes..." << endl;
-            Sleep(1000);
-        }
     cout << "Eliminacion de tareas completado." << endl;
     cout << "La lista actualizada queda como: " << endl;
     mostrarLista(inicio);
 }
+
 void paseOrbita(TareaIA *inicio)
 {
     TareaIA *aux = inicio; 
     int energia_disponible; 
     int contador = 0;
     cout << "Ingrese porfavor la energia disponible para la mision: "; cin >> energia_disponible;
-    while (aux != NULL)
+    while (aux != nullptr)
     {
         if (aux->consumo_energetico <= energia_disponible)
         {
@@ -215,37 +242,43 @@ void paseOrbita(TareaIA *inicio)
         }
     }
     int segundos_espera = 4;
-    cout << "Iniciando la eliminacion, faltan " << segundos_espera << " segundos..." << endl;
+    cout << "Procesando, espere " << segundos_espera << " segundos..." << endl;
     for (int i = segundos_espera; i > 0; --i)
     {
         cout << i << " segundos restantes..." << endl;
         Sleep(1000);
     }
     cout << "El total de tareas procesables son: " << contador << endl;
-    if (aux != NULL)
+    // CORRECCIÓN: Se accede a aux directamente, no a aux->prox, para evitar crash
+    if (aux != nullptr)
     {
-        cout << "Quedan " << energia_disponible << "W en la nave, por lo que" << aux->prox->id_alfanumerico << " que necesita " << aux->prox->consumo_energetico << "W no se pudo completar.";
+        cout << "Quedan " << energia_disponible << "W en la nave, por lo que " << aux->id_alfanumerico << " que necesita " << aux->consumo_energetico << "W no se pudo completar.";
     }
     else
     {
         cout << "Se completaron todas las tareas sin problemas.";
     }
-    
 }
-void balanceodeCarga (TareaIA *&inicio)
+
+void balanceodeCarga(TareaIA *&inicio)
 {
-    TareaIA *actual = inicio; float umbral; float total = 0; TareaIA *ordenada = NULL; TareaIA *listaSecundaria = NULL;
+    TareaIA *actual = inicio;
+    float umbral;
+    float total = 0;
+    TareaIA *ordenada = nullptr;
+    TareaIA *listaSecundaria = nullptr;
+
     cout << "Ingrese el maximo peso computacional que podra realizar el satelite: "; cin >> umbral;
-    while (actual != NULL)
+    while (actual != nullptr)
     {
         total = actual->peso_computacional + total;
         actual = actual->prox;
     }
     actual = inicio;
-    while (actual != NULL)
+    while (actual != nullptr)
     {
         TareaIA *siguiente = actual->prox;
-        if (ordenada == NULL || actual->urgencia <= ordenada->urgencia)
+        if (ordenada == nullptr || actual->urgencia <= ordenada->urgencia)
         {
             actual->prox = ordenada;
             ordenada = actual;
@@ -253,7 +286,7 @@ void balanceodeCarga (TareaIA *&inicio)
         else 
         {
             TareaIA *aux = ordenada;
-            while (aux->prox != NULL && aux->prox->urgencia < actual->urgencia){
+            while (aux->prox != nullptr && aux->prox->urgencia < actual->urgencia){
                 aux = aux->prox;
             }
             actual->prox = aux->prox;
@@ -261,7 +294,7 @@ void balanceodeCarga (TareaIA *&inicio)
         }
         actual = siguiente;
     }
-    while (ordenada != NULL)
+    while (ordenada != nullptr)
     {
         TareaIA *aux = ordenada;
         if (total > umbral)
@@ -277,114 +310,89 @@ void balanceodeCarga (TareaIA *&inicio)
         }
     }
     inicio = ordenada;
-    int segundos_espera = 4; 
-        cout << "Iniciando el ordenamiento, espere " << segundos_espera << " segundos..." << endl;
-            for (int i = segundos_espera; i > 0; --i) 
-            {
-            cout << i << " segundos restantes..." << endl;
-            Sleep(1000);
-            }   
+    int segundos_espera = 4;
+    cout << "Iniciando el ordenamiento, espere " << segundos_espera << " segundos..." << endl;
+    for (int i = segundos_espera; i > 0; --i) 
+    {
+        cout << i << " segundos restantes..." << endl;
+        Sleep(1000);
+    }
+    // CORRECCIÓN: Se usa inicio en vez de ordenada (ya apuntan al mismo lugar, pero es más claro y seguro)
     cout << "Se han eliminado los elementos de la lista y quedaria: " << endl;
-    mostrarLista(ordenada);
+    mostrarLista(inicio);
     cout << "Y en la lista secundaria estan: " << endl;
     mostrarLista(listaSecundaria);
-}
-// Inserción al principio usando un nodo ya existente
-void insertarPrimero_Nodo(TareaIA *&inicio, TareaIA *nuevo)
-{
-    nuevo->prox = inicio;
-    inicio = nuevo;
-}
-//revisar
-void insertarUltimo_Nodo(TareaIA *&inicio, TareaIA *nuevo)
-{
-    if (listaVacia(inicio))
+    // CORRECCIÓN: Se libera la lista secundaria para evitar memory leak
+    while (listaSecundaria != nullptr)
     {
-        inicio = nuevo;
+        TareaIA *temp = listaSecundaria;
+        listaSecundaria = listaSecundaria->prox;
+        delete temp;
+    }
+}
+
+// El sistema elimina de forma automatica el nodo que presente la peor eficiencia operativa
+// definida matematicamente como la menor relacion entre su urgencia y su consumo energetico: Urgencia/consumo
+void eliminarpeoreficiencia(TareaIA *&inicio)
+{
+    if (listaVacia(inicio)) {
+        cout << "La lista no cuenta con suficientes elementos" << endl;
+        return;
+    }
+    // CORRECCIÓN: peorAnterior rastrea el nodo ANTERIOR al peor, no el peor mismo
+    TareaIA *peor = inicio;
+    TareaIA *peorAnterior = nullptr;
+    TareaIA *anterior = nullptr;
+    TareaIA *aux = inicio;
+
+    // CORRECCIÓN: División en float para no hacer division entera
+    double peor_eficiencia = (double)peor->urgencia / (double)peor->consumo_energetico;
+
+    while (aux != nullptr)
+    {
+        double eficiencia_actual = (double)aux->urgencia / (double)aux->consumo_energetico;
+        if (eficiencia_actual < peor_eficiencia)
+        {
+            peor_eficiencia = eficiencia_actual;
+            peor = aux;
+            peorAnterior = anterior;
+        }
+        anterior = aux;
+        aux = aux->prox;
+    }
+
+    cout << "La tarea con peor eficiencia es: " << peor->id_alfanumerico
+         << " (urgencia=" << peor->urgencia
+         << ", consumo=" << peor->consumo_energetico
+         << ", eficiencia=" << peor_eficiencia << ")" << endl;
+    cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
+
+    // CORRECCIÓN: Se desenlaza correctamente usando peorAnterior
+    if (peorAnterior == nullptr)
+    {
+        // El peor nodo es el primero de la lista
+        inicio = peor->prox;
     }
     else
     {
-        TareaIA *auxiliar = inicio;
-        while (auxiliar->prox != NULL)
-        {
-            auxiliar = auxiliar->prox;
-        }
-        auxiliar->prox = nuevo;
+        peorAnterior->prox = peor->prox;
     }
+    delete peor;
+
+    cout << "La tarea ha sido eliminada." << endl;
+    cout << "La lista nueva es: " << endl;
+    mostrarLista(inicio);
 }
-// El sistema debe eliminar de forma automarica el nodo que presente la peor eficiencia operativa definida matematicamente como la menor relacion entre su urgencia y su consumo energetico.... Urgencia/consumo
-// void eliminarpeoreficiencia(TareaIA *&inicio)
-// {
-//     if (listaVacia(inicio)) {
-//         cout << "La lista no cuenta con suficientes elementos" << endl;
-//         return;
-//     }
-//     TareaIA *peor = inicio;
-//     TareaIA *anterior = inicio;
-//     TareaIA *aux = inicio->prox;
-//     {
-//         while(aux!=nullptr){
-//             int peor_urgencia=peor->urgencia;
-//             int peor_consumo=peor->consumo_energetico;
-//             double peor_caso = peor_urgencia/peor_consumo;
-//             int urgencia = aux->urgencia;
-//             int consumo = aux->consumo_energetico;
-//             double caso = urgencia/consumo;
-//                 if (peor_caso<caso){
-//                 anterior=aux;
-//                 aux=aux->prox;
-//             }
-//                 else{
-//                     peor=aux;
-//                     anterior=aux;
-//                     aux=aux->prox;
-//                 }
-//         }
-//         if (peor == inicio)
-//         {
-//             inicio = inicio->prox;
-//             cout << "la tarea a eliminar es1 " << endl;
-//             cout << peor << endl;
-//             cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
-//             delete peor;
-//             cout << "La tarea ha sido eliminada";
-//             cout << "La lista nueva es: " << endl;
-//             mostrarLista(inicio);
-//         }
-//         else
-//         {
-//             TareaIA *prev = inicio;
-//             while (prev->prox != peor && prev->prox != nullptr)
-//             {
-//                 prev = prev->prox;
-//             }
-//             if (prev->prox == peor)
-//             {  
-//                 prev->prox = peor->prox;
-//                 cout << "la tarea a eliminar es2 " << endl;
-//                 cout << peor << endl;
-//                 cout << "La tarea con peor eficiencia esta siendo borrada..." << endl;
-//                 delete peor;
-//                 cout << "La tarea ha sido eliminada";
-//                 cout << "La lista nueva es: " << endl;
-//                 mostrarLista(inicio);
-//             }
-//         }
-//         return;
-//     }
-// }
-// 2da fase de proyecto. Entrega de proyecto con almacenamiento, se emplearan archivos .TXT para guardar toda la información que se haya generado en todas las listas que se manejen tanto al leer el proyecto (las listas se llenan automáticamente) como para escribir (se guarda todo el contenido de las listas en los archivos). No usen plantillas, ni clases, solo archivos simples .TXT y los manejan con las operaciones tradicionales de archivos en C++. No habrá enunciado de proyecto, lo que envío son las indicaciones. Igual se mantiene la defensa del proyecto.
-// NUEVA FUNCIÓN: Guarda el estado completo de la lista en un archivo TXT
-// NUEVA FUNCIÓN: Guarda el estado completo de la lista en un archivo TXT
+
+// Guarda el estado completo de la lista en un archivo TXT
 void guardarEnArchivo(TareaIA *inicio, string nombreArchivo)
 {
     ofstream archivo(nombreArchivo);
     if (archivo.is_open())
     {
         TareaIA *aux = inicio;
-        while (aux != NULL)
+        while (aux != nullptr)
         {
-            // Guardamos cada dato separado por un espacio
             archivo << aux->id_alfanumerico << " "
                     << aux->tipo_algoritmo << " "
                     << aux->peso_computacional << " "
@@ -401,7 +409,8 @@ void guardarEnArchivo(TareaIA *inicio, string nombreArchivo)
         cout << "Error: No se pudo abrir el archivo para guardar datos." << endl;
     }
 }
-// NUEVA FUNCIÓN: Carga los elementos desde el archivo TXT y reconstruye la lista al iniciar
+
+// Carga los elementos desde el archivo TXT y reconstruye la lista al iniciar
 void cargarDesdeArchivo(TareaIA *&inicio, string nombreArchivo)
 {
     ifstream archivo(nombreArchivo);
@@ -411,7 +420,6 @@ void cargarDesdeArchivo(TareaIA *&inicio, string nombreArchivo)
         float peso, latencia, consumo;
         int urgencia;
 
-        // Leemos de forma secuencial mientras existan registros completos
         while (archivo >> id >> tipo >> peso >> latencia >> consumo >> urgencia)
         {
             TareaIA *nuevo = new TareaIA;
@@ -421,20 +429,15 @@ void cargarDesdeArchivo(TareaIA *&inicio, string nombreArchivo)
             nuevo->latencia_max = latencia;
             nuevo->consumo_energetico = consumo;
             nuevo->urgencia = urgencia;
-            nuevo->prox = NULL;
+            nuevo->prox = nullptr;
 
-            // Se inserta en la lista
             insertarUltimo_Nodo(inicio, nuevo);
-            
-            // Actualizamos el contador interno estático de generarID para que no choque con los cargados
-            // Si el ID es por ejemplo "TASK-5", extraemos el número '5' e igualamos el correlativo.
+
+            // CORRECCIÓN: Se sincroniza el contador global directamente, sin llamadas ficticias a generarID
             try {
                 int numId = stoi(id.substr(5));
-                // Ejecutamos generarID de forma ficticia para avanzar el contador estático si es necesario
-                static int contadorFicticio = 1;
-                while(contadorFicticio <= numId) {
-                    generarID();
-                    contadorFicticio++;
+                if (numId >= contadorID) {
+                    contadorID = numId + 1;
                 }
             } catch (...) {}
         }
@@ -446,20 +449,22 @@ void cargarDesdeArchivo(TareaIA *&inicio, string nombreArchivo)
         cout << "No se encontro un archivo previo (" << nombreArchivo << "). Se iniciara con la lista vacia." << endl;
     }
 }
+
 int main()
 {
-    TareaIA *lista = NULL; TareaIA *listaorg = NULL;
-    string id_alfanumerico, tipo_algoritmo;
-    float peso_computacional, latencia_max, consumo_energetico;
-    int urgencia, x = -1;
-    ofstream archivo("Lista_actual.txt");
+    TareaIA *lista = nullptr;
+    TareaIA *listaorg = nullptr;
+    int x = -1;
+    // CORRECCIÓN: Se eliminó el ofstream que truncaba el archivo al inicio del programa
+    // Primero se cargan los datos guardados previamente
+    cargarDesdeArchivo(lista, "Lista_actual.txt");
+    cargarDesdeArchivo(listaorg, "Lista_original.txt");
     while (x != 10){
-        system ("cls");
+        system("cls");
         cout << "------------ BIENVENIDO AL MENU DE LA MISION NEURO-LINK ------------"<< endl;
         cout << "con el siguiente menu podra acceder a distintas secciones del menu" << endl;
         cout << "porfavor presione correctamente los numeros indicados para comenzar" << endl;
         cout << "                                                                               " << endl;
-        cout << " 0. Modo desarrollador" << endl;
         cout << " 1. Guardar en archivos " << endl;
         cout << " 2. Insertar en lista de forma aleatoria" << endl;
         cout << " 3. Imprimir la lista actual" << endl;
@@ -468,7 +473,7 @@ int main()
         cout << " 6. Eliminar nodos que supere un dato determinado de latencia" << endl;
         cout << " 7. Procesar cuantas tareas antes de agotar la bateria" << endl;
         cout << " 8. Mover tareas de menor urgencia a una lista de espera" << endl;
-        cout << " 9. eliminar peor eficiencia" << endl;
+        cout << " 9. Eliminar peor eficiencia" << endl;
         cout << " 10. Salir del menu" << endl;
         cout << "______________________________________________________________________" << endl;
         cout << "Porfavor ingrese que accion desee realizar: "; cin >> x;
@@ -479,10 +484,7 @@ int main()
         }
         switch(x)
         {
-            case 0:
-            break;
             case 1:
-                // GUARDAR DATOS EXPLICITAMENTE
                 guardarEnArchivo(lista, "Lista_actual.txt");
                 guardarEnArchivo(listaorg, "Lista_original.txt");
                 break;
@@ -490,33 +492,33 @@ int main()
                 cout << "Se empezo el procedimiendo de creacion de Tarea aleatoria" << endl;
                 cout << "Desea insertar al principio (1), o al final (2)?: ";
                 int z; cin >> z;
+                cout << "Cuantas tareas desea agregar: ?";
+                int y;cin >>y;
                 if (z == 1)
                 {
-                    cout << "Tarea situada de primera, preparando proceso de creacion..." << endl;
-                    Sleep(1000);
-                    // Creamos y clonamos
-                    TareaIA *nuevoNodo = crearNodo_Aleatorio();
-                    TareaIA *copiaParaOriginal = clonarNodo(nuevoNodo);
-                    // Insertamos al principio en ambas
-                    insertarPrimero_Nodo(lista, nuevoNodo);
-                    insertarPrimero_Nodo(listaorg, copiaParaOriginal);
-                    
-                    cout << "Tarea creada y situada con exito en ambas listas." << endl;
+                    for (y>0;y--;)
+                    {
+                        cout << "Tarea situada de primera, preparando proceso de creacion..." << endl;
+                        Sleep(1000);
+                        TareaIA *nuevoNodo = crearNodo_Aleatorio();
+                        TareaIA *copiaParaOriginal = clonarNodo(nuevoNodo);
+                        insertarPrimero_Nodo(lista, nuevoNodo);
+                        insertarPrimero_Nodo(listaorg, copiaParaOriginal);
+                        cout << "Tarea creada y situada con exito en ambas listas." << endl;
+                    }
                 }
                 else if (z == 2)
                 {
-                    cout << "Tarea situada de ultima, preparando proceso de creacion..." << endl;
-                    Sleep(1000);
-                    
-                    // Creamos y clonamos
-                    TareaIA *nuevoNodo = crearNodo_Aleatorio();
-                    TareaIA *copiaParaOriginal = clonarNodo(nuevoNodo);
-                    
-                    // Insertamos al final en ambas
-                    insertarUltimo_Nodo(lista, nuevoNodo);
-                    insertarUltimo_Nodo(listaorg, copiaParaOriginal);
-                    
-                    cout << "Tarea creada y situada con exito en ambas listas." << endl;
+                    for (y>0;y--;)
+                    {
+                        cout << "Tarea situada de ultima, preparando proceso de creacion..." << endl;
+                        Sleep(1000);
+                        TareaIA *nuevoNodo = crearNodo_Aleatorio();
+                        TareaIA *copiaParaOriginal = clonarNodo(nuevoNodo);
+                        insertarUltimo_Nodo(lista, nuevoNodo);
+                        insertarUltimo_Nodo(listaorg, copiaParaOriginal);
+                        cout << "Tarea creada y situada con exito en ambas listas." << endl;
+                    }
                 }
                 else 
                 {
@@ -558,10 +560,9 @@ int main()
                 balanceodeCarga(lista);
                 break;
             case 9:
-                cout << "Opcion no implementada aun." << endl;
+                eliminarpeoreficiencia(lista);
                 break;
             case 10:
-                // AL SALIR: Aseguramos guardar los últimos cambios hechos en las listas
                 cout << "Guardando cambios antes de salir..." << endl;
                 guardarEnArchivo(lista, "Lista_actual.txt");
                 guardarEnArchivo(listaorg, "Lista_original.txt");
