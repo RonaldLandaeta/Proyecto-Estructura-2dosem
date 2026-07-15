@@ -1,2 +1,0 @@
-TASK-4 Cifrado_Cuantico 32 53 70 8
-TASK-1 Analisis_Termico 56 73 35 10
